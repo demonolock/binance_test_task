@@ -1,5 +1,5 @@
 import os
-
+import logging
 from binance_test_task.moving_average import moving_average
 
 
@@ -25,7 +25,7 @@ class candle_stream():
             ma = []
             while True:
                 res = await ts.recv()
-                # print(res)
+                # logging.info(res)
                 path = f"./output/{self.symbol}_price.txt"
                 mode = 'a' if os.path.exists(path) else 'w'
                 with open(path, mode) as f:
@@ -33,5 +33,5 @@ class candle_stream():
                 m_avg = moving_average(self.window_size)
                 m_avg.add_value(ma, res['k']['c'])
                 if m_avg.calculate(ma) is not None:
-                    print(f'Moving average for `{self.symbol}`  is {m_avg.calculate(ma)}')
+                    logging.info(f'Moving average for `{self.symbol}`  is {m_avg.calculate(ma)}')
                 await self.client.close_connection()
