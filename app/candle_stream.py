@@ -1,6 +1,6 @@
 import os
 import logging
-from binance_test_task.moving_average import moving_average
+from app.moving_average import moving_average
 
 
 class candle_stream():
@@ -21,17 +21,24 @@ class candle_stream():
         # start kline sockets
         ts = self.bm.kline_socket(self.symbol)
         # then start receiving messages
+        output_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                      "output")
+        logging.basicConfig(filename='./logs/candle_stream.log', level=logging.INFO)
         async with ts:
             ma = []
             while True:
                 res = await ts.recv()
-                # logging.info(res)
-                path = f"./output/{self.symbol}_price.txt"
-                mode = 'a' if os.path.exists(path) else 'w'
-                with open(path, mode) as f:
+                logging.info(res)
+
+                if not os.path.exists(output_dir):
+                    os.makedirs(output_dir)
+
+                path = f"{output_dir}/{self.symbol}_price.txt"
+                with open(path, 'a') as f:
                     f.writelines(str([res['E'], res['s'], res['k']]) + "\n")
-                m_avg = moving_average(self.window_size)
+                m_avg = moving_average(window_size=self.window_size)
                 m_avg.add_value(ma, res['k']['c'])
                 if m_avg.calculate(ma) is not None:
-                    logging.info(f'Moving average for `{self.symbol}`  is {m_avg.calculate(ma)}')
+                    logging.info(f'Moving average for `{self.symbol}` is {m_avg.calculate(ma)}')
+                    print(f'Moving average for `{self.symbol}` is {m_avg.calculate(ma)}')
                 await self.client.close_connection()

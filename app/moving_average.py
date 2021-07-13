@@ -1,10 +1,6 @@
 class moving_average():
-    """
-    Get candles of BTC/USDT, ETH/USDT, BNB/BTC
-    For more info https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#klinecandlestick-streams
-    """
 
-    def __init__(self, window_size = 5):
+    def __init__(self, window_size):
         self.window_size = window_size
 
     def calculate(self, ma):

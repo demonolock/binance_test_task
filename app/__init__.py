@@ -1,6 +1,6 @@
 import asyncio
 
-from binance_test_task.main import main
+from app.test import main
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()

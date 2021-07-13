@@ -7,11 +7,10 @@ RUN apt-get update -qy && \
 
 RUN pip install binance
 RUN pip install python-binance
+RUN pip install pydantic
 
 WORKDIR /code
+COPY app  /code/app
+ENV PYTHONPATH /code
 
-COPY ./binance_test_task  /code/binance_test_task/
-
-CMD ["/code/binance_test_task/test.py"]
-
-ENTRYPOINT ["python3", "/code/binance_test_task/__init__.py"]
+ENTRYPOINT ["python3", "/code/app/__init__.py"]
